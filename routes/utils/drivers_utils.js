@@ -41,8 +41,28 @@ async function getStandingsbyYear(year){
     const response = await axios.get(`${api_url}/${year}/driverStandings.json?limit=1000`);
     return response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
 }
+/**
+ * 
+ * @param {the unique driver name} driverId 
+ * @returns an object with total for the driver, and an object with the data per year
+ */
+async function getDriverFullInfo(driverId){
+    const response = await axios.get(`${api_url}/drivers/${driverId}/driverStandings.json?limit=1000`);
+    let driverStandings = response.data.MRData.StandingsTable.StandingsLists;
+    let totalPoints = 0;
+    let totalWins = 0;
+    let standingPerYear={};
+    for (const standing of driverStandings) {
+        totalPoints += Number(standing.DriverStandings[0].points);
+        totalWins += Number(standing.DriverStandings[0].wins);
+        standingPerYear[standing.season] = {position:standing.DriverStandings[0].position,points:standing.DriverStandings[0].points,wins:standing.DriverStandings[0].wins};
+    }
+    return {totalPoints:totalPoints,totalWins:totalWins,standingPerYear:standingPerYear};
+
+}
 
 exports.insertPosition = insertPosition;
 exports.getStandingsbyYear = getStandingsbyYear;
 exports.getAllDrivers = getAllDrivers;
 exports.extractDriversDetails = extractDriversDetails;
+exports.getDriverFullInfo = getDriverFullInfo;

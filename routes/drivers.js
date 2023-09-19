@@ -80,13 +80,22 @@ router.get("/driverStandingsByYear", async (req, res, next) => {
         const year = req.query.year;
         const response = await drivers_utils.getStandingsbyYear(year);
         // console.log(response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-        const drivers = response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+        
+        const drivers = response
         res.send(drivers).status(200);
     }catch(error){
         next(error);
     }
 
 })
-
+router.get('/driverInfo', async (req, res, next) => {
+    try{
+        const driverId = req.query.driverId;
+        const data = await drivers_utils.getDriverFullInfo(driverId);
+        res.send(data).status(200);
+    }catch(error){
+        next(error);
+    }
+})
 
 module.exports = router;
